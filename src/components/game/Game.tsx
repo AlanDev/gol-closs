@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Credito from "@/components/ui/Credito";
 import Logo from "@/components/ui/Logo";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createAudioSource, type AudioSource } from "@/lib/audio";
@@ -373,6 +374,8 @@ export default function Game({ categoria }: { categoria: Categoria }) {
           </div>
         </main>
       )}
+
+      <Credito className="mt-6" />
 
       <HowToPlayModal open={modal === "ayuda"} onClose={cerrarModal} />
       <StatsModal

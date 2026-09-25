@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Credito from "@/components/ui/Credito";
 import Logo from "@/components/ui/Logo";
 import { CATEGORIAS, MAX_INTENTOS } from "@/lib/constants";
 import Countdown from "./Countdown";
@@ -83,6 +84,7 @@ export default function Home() {
           {todasTerminadas ? "¡Jugaste todo! Nuevos relatos en" : "Nuevos relatos en"}
         </span>
         <Countdown />
+        <Credito className="mt-6" />
       </footer>
     </div>
   );
