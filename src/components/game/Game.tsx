@@ -42,7 +42,7 @@ import StatsModal from "./StatsModal";
 
 type ModalId = "ayuda" | "stats" | "resultado" | null;
 
-/** Tapar el video de YouTube durante la partida (se muestra al terminar). */
+/** Tapar siempre el video de YouTube: solo se escucha el relato. */
 const OCULTAR_VIDEO = process.env.NEXT_PUBLIC_OCULTAR_VIDEO !== "false";
 
 async function leerJson<T>(res: Response): Promise<T> {
@@ -175,10 +175,15 @@ export default function Game({ categoria }: { categoria: Categoria }) {
   // ---------- Intentos ----------
   const registrar = (attempt: Attempt) => {
     if (!game || game.status !== "jugando") return;
-    detener();
     const attempts = [...game.attempts, attempt];
     const gano = attempt.kind === "respuesta" && attempt.result === "correcto";
     const status = gano ? "ganado" : attempts.length >= MAX_INTENTOS ? "perdido" : "jugando";
+    // Saltar mientras suena: sigue corriendo hasta la nueva duración, sin volver al inicio.
+    if (attempt.kind === "saltado" && status === "jugando" && playing) {
+      sourceRef.current?.extend(DURACIONES[attempts.length]);
+    } else {
+      detener();
+    }
     const next: GameState = { ...game, attempts, status };
     setGame(next);
     guardarPartida(next);
@@ -306,18 +311,17 @@ export default function Game({ categoria }: { categoria: Categoria }) {
           <AttemptList attempts={game.attempts} activo={!terminado} />
 
           {puzzle.source.type === "youtube" && (
-            <div
-              className={`relative mx-auto aspect-video overflow-hidden rounded-md border border-linea bg-black ${
-                OCULTAR_VIDEO && terminado ? "w-full" : "w-44"
-              }`}
-            >
+            <div className="relative mx-auto aspect-video w-44 overflow-hidden rounded-md border border-linea bg-black">
               <div ref={ytRef} className="size-full" />
-              {/* Tapa el video mientras se juega (título e imagen delatan el gol).
-                  No se usa display:none porque algunos navegadores pausan iframes ocultos. */}
-              {OCULTAR_VIDEO && !terminado && (
+              {/* Tapa el video siempre, también al terminar: el resultado se muestra en el
+                  pop-up, no en el video. No se usa display:none porque algunos navegadores
+                  pausan iframes ocultos. */}
+              {OCULTAR_VIDEO && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1 bg-panel text-tenue">
                   <IconMic className="size-6 text-cesped" />
-                  <span className="font-display text-xs uppercase tracking-widest">Solo relato</span>
+                  <span className="font-display text-xs uppercase tracking-widest">
+                    {terminado ? "Relato completo" : "Solo relato"}
+                  </span>
                 </div>
               )}
             </div>

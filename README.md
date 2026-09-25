@@ -95,7 +95,7 @@ npm run dev
 | `ADMIN_EMAIL` | único email con acceso a `/admin` |
 | `NEXT_PUBLIC_SITE_URL` | URL pública (redirect del link mágico) |
 | `NEXT_PUBLIC_LAUNCH_DATE` | fecha del puzzle #1 (`YYYY-MM-DD`) |
-| `NEXT_PUBLIC_OCULTAR_VIDEO` | `true` (por defecto) tapa el video de YouTube durante la partida y lo muestra al terminar; `false` lo deja visible |
+| `NEXT_PUBLIC_OCULTAR_VIDEO` | `true` (por defecto) tapa siempre el video de YouTube (solo se escucha el relato; el resultado aparece en el pop-up); `false` lo deja visible |
 
 ## Deploy en Vercel
 

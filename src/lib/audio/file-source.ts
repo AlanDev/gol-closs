@@ -11,6 +11,8 @@ export class FileAudioSource implements AudioSource {
   private objectUrl: string | null = null;
   private raf = 0;
   private current: PlayOptions | null = null;
+  /** Segundos desde `start` en los que se corta (extend() lo puede alargar). */
+  private limite = 0;
   private destroyed = false;
 
   constructor(
@@ -56,14 +58,14 @@ export class FileAudioSource implements AudioSource {
   play(opts: PlayOptions): void {
     this.stop();
     this.current = opts;
+    this.limite = opts.duration;
     const { start } = this;
-    const end = start + opts.duration;
     this.audio.currentTime = start;
 
     const tick = () => {
       const t = this.audio.currentTime;
-      if (t >= end || this.audio.ended) {
-        opts.onProgress?.(opts.duration);
+      if (t >= start + this.limite || this.audio.ended) {
+        opts.onProgress?.(this.limite);
         this.stop();
         return;
       }
@@ -86,6 +88,10 @@ export class FileAudioSource implements AudioSource {
     const cur = this.current;
     this.current = null;
     cur?.onEnd?.();
+  }
+
+  extend(duration: number): void {
+    if (this.current) this.limite = Math.max(this.limite, duration);
   }
 
   setStart(start: number): void {

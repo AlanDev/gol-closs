@@ -21,6 +21,11 @@ export interface AudioSource {
    */
   play(opts: PlayOptions): void;
   stop(): void;
+  /**
+   * Alarga la reproducción en curso hasta `duration` segundos desde `start`,
+   * sin cortarla ni volver al inicio. No hace nada si no está sonando.
+   */
+  extend(duration: number): void;
   setStart(start: number): void;
   /** Duración total del medio (0 si todavía no se conoce). */
   getDuration(): number;

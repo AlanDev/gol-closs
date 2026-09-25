@@ -7,6 +7,9 @@ export const DURACION_REVELACION = 30;
 
 export const TIMEZONE = "America/Argentina/Buenos_Aires";
 
+/** Letras mínimas antes de mostrar sugerencias (para que la lista no regale la respuesta). */
+export const MIN_LETRAS_BUSQUEDA = 3;
+
 export const CATEGORIAS = [
   { slug: "europa", nombre: "Europa", bajada: "Champions, LaLiga, Premier, Serie A y más" },
   { slug: "sudamerica", nombre: "Sudamérica", bajada: "Libertadores, Sudamericana, ligas locales y más" },

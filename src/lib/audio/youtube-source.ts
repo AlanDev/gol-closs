@@ -69,6 +69,8 @@ export class YouTubeAudioSource implements AudioSource {
   private yt: YTNamespace | null = null;
   private raf = 0;
   private current: PlayOptions | null = null;
+  /** Segundos desde `start` en los que se corta (extend() lo puede alargar). */
+  private limite = 0;
   private playingSince = 0;
   private mount: HTMLDivElement | null = null;
 
@@ -127,9 +129,9 @@ export class YouTubeAudioSource implements AudioSource {
     const elapsed = this.player.getCurrentTime() - this.start;
     // Justo después del seek getCurrentTime puede devolver la posición vieja.
     const settling = performance.now() - this.playingSince < 300;
-    if (!settling || (elapsed >= -0.5 && elapsed <= opts.duration + 0.5)) {
-      if (elapsed >= opts.duration) {
-        opts.onProgress?.(opts.duration);
+    if (!settling || (elapsed >= -0.5 && elapsed <= this.limite + 0.5)) {
+      if (elapsed >= this.limite) {
+        opts.onProgress?.(this.limite);
         this.stop();
         return;
       }
@@ -142,6 +144,7 @@ export class YouTubeAudioSource implements AudioSource {
     if (!this.player) return;
     this.stop();
     this.current = opts;
+    this.limite = opts.duration;
     this.player.seekTo(this.start, true);
     this.player.playVideo();
   }
@@ -156,6 +159,10 @@ export class YouTubeAudioSource implements AudioSource {
       if (cur) this.player.seekTo(this.start, true);
     }
     cur?.onEnd?.();
+  }
+
+  extend(duration: number): void {
+    if (this.current) this.limite = Math.max(this.limite, duration);
   }
 
   setStart(start: number): void {

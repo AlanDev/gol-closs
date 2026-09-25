@@ -1,6 +1,7 @@
 "use client";
 import { useId, useMemo, useRef, useState } from "react";
-import { buscarRelatos, etiquetaRelato } from "@/lib/text";
+import { MIN_LETRAS_BUSQUEDA } from "@/lib/constants";
+import { buscarRelatos, etiquetaRelato, letrasEscritas } from "@/lib/text";
 import type { RelatoOpcion } from "@/lib/types";
 
 interface Props {
@@ -101,7 +102,7 @@ export default function GuessInput({ opciones, excluidos, disabled, skipLabel, o
           autoCorrect="off"
           spellCheck={false}
           disabled={disabled}
-          placeholder="Buscá jugador, equipo, rival…"
+          placeholder="Escribí el jugador…"
           value={consulta}
           onChange={(e) => {
             setConsulta(e.target.value);
@@ -132,7 +133,13 @@ export default function GuessInput({ opciones, excluidos, disabled, skipLabel, o
         )}
       </div>
       {consulta && !elegido && !mostrarLista && !disabled && (
-        <p className="-mt-1 text-xs text-tenue">Elegí una opción de la lista para responder.</p>
+        <p className="-mt-1 text-xs text-tenue">
+          {letrasEscritas(consulta) < MIN_LETRAS_BUSQUEDA
+            ? `Escribí al menos ${MIN_LETRAS_BUSQUEDA} letras del jugador.`
+            : resultados.length === 0
+              ? "No hay ningún jugador que empiece así."
+              : "Elegí una opción de la lista para responder."}
+        </p>
       )}
       <div className="grid grid-cols-2 gap-2.5">
         <button
