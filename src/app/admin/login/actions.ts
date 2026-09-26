@@ -19,7 +19,9 @@ export async function enviarLinkMagico(_prev: LoginState | null, form: FormData)
   if (!esEmailAdmin(email)) return generico;
 
   const h = await headers();
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
+  // Normalizamos: un espacio o una "/" final hacen que Supabase rechace el redirect.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, "");
+  const origin = siteUrl || `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithOtp({
